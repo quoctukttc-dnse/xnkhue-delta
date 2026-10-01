@@ -6,14 +6,15 @@ Web tĩnh (chạy trên GitHub Pages) để chuyển **file Data xuất từ SCA
 |---|---|
 | `<Customs code>` (vd `4AC089-977`) | Dán dữ liệu SCAF: Order No, Reference, Color, Size, CTN From, CTN To, Number of Box, Real QTY + bảng **tổng hợp theo Customs code + Size** (cột L:O) |
 | `PLIST` | Packing list, lấy từ sheet Customs code (công thức liên kết) |
-| `CI` | Commercial Invoice: số INV theo SCAF, các dòng item lấy từ bảng tổng hợp của sheet Customs code |
-| `INV-3RD`, `INV - delta` | Lấy thông tin từ sheet `CI` bằng công thức |
+| `CI` | Commercial Invoice: số INV theo SCAF, các dòng item lấy từ bảng tổng hợp của sheet Customs code (không có bảng tổng hợp theo HS code) |
+| `INV-3RD` | Invoice bên thứ 3 (buyer phát hành), lấy từ `CI`, **có sẵn dấu/chữ ký buyer** (dùng cho hồ sơ CO). Đổi/bỏ dấu ngay trên web |
+| `INV - delta` | Lấy thông tin từ sheet `CI` bằng công thức |
 
 Các sheet liên kết với nhau bằng công thức như form gốc, nên sửa trong Excel (giá, số lượng…) sẽ tự cập nhật.
 
 ## Cách dùng
 1. Mở trang web, chọn file `.xlsx` xuất từ SCAF (báo cáo Packing List).
-2. Nhập **Customs code** cho từng cặp Reference + Màu (vd `4AC089-977`), ORDER NO (style, vd `AOFYDDQ11`), HS code, đơn giá. Lần sau web tự nhớ.
+2. Nhập **Order No** cho từng lô (mặc định lấy theo SCAF, sửa lại cho đúng), **Customs code** cho từng cặp Reference + Màu (vd `4AC089-977`), ORDER NO (style, vd `AOFYDDQ11`), HS code, đơn giá. Lần sau web tự nhớ.
 3. Kiểm tra thông tin chứng từ (consignee, tàu, CBM/NW/GW, container…).
 4. Chọn quy ước size: `90(S)` → **S** (mặc định), hoặc **90**, hoặc giữ nguyên.
 5. Bấm **Xuất file Excel**.

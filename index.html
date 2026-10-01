@@ -29,10 +29,10 @@
   <!-- STEP 2 -->
   <section class="card">
     <h2><span class="n">2</span> Khai báo Customs code theo Reference + Màu</h2>
-    <p class="hint">Customs code lấy từ SCAF (vd: <code>4AC089-977</code>). Thông tin đã nhập được nhớ trên máy này cho lần sau.</p>
+    <p class="hint"><b>Order No</b> mặc định lấy theo SCAF, sửa lại cho đúng form (vd: <code>3035152-26-q3-2 adidas bos women boxer 4th _ solid</code>). Customs code lấy từ SCAF (vd: <code>4AC089-977</code>). Customs code, style, HS code, giá được nhớ trên máy này cho lần sau; Order No nhập theo từng lô.</p>
     <div class="tbl-wrap">
       <table id="mapTbl">
-        <thead><tr><th>Order No</th><th>Reference</th><th>Màu</th><th>Customs code *</th><th>ORDER NO (style)</th><th>HS code</th><th>Đơn giá USD</th></tr></thead>
+        <thead><tr><th>Order No * (tự nhập)</th><th>Reference</th><th>Màu</th><th>Customs code *</th><th>ORDER NO (style)</th><th>HS code</th><th>Đơn giá USD</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -53,6 +53,17 @@
   <section class="card">
     <h2><span class="n">3</span> Thông tin chứng từ</h2>
     <div class="grid" id="hdr"></div>
+    <div class="stamp">
+      <div>
+        <div class="lbl">Dấu / chữ ký buyer trên sheet <b>INV-3RD</b> (dùng cho hồ sơ CO)</div>
+        <div class="stampbox"><img id="stampImg" alt="Dấu buyer" hidden><span id="stampNone" hidden>Không chèn dấu</span></div>
+      </div>
+      <div class="row gap">
+        <label class="ghost btnlike">Đổi ảnh dấu…<input type="file" id="stampFile" accept="image/png,image/jpeg" hidden></label>
+        <button class="ghost" id="stampDefault" type="button">Dùng dấu mặc định</button>
+        <button class="ghost" id="stampRemove" type="button">Bỏ dấu</button>
+      </div>
+    </div>
   </section>
 
   <!-- STEP 4 -->
@@ -78,6 +89,7 @@
 </main>
 
 <script src="vendor/exceljs.min.js"></script>
+<script src="assets/stamp-data.js"></script>
 <script src="core.js"></script>
 <script src="app.js"></script>
 </body>

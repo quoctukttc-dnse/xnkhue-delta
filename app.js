@@ -38,7 +38,7 @@
     ['containerNote', 'Ghi chú container', 'A PART OF 1*40HC', 'text', true]
   ];
 
-  var state = { data: null, mapping: load(LS_MAP, {}), priceOv: {}, groups: [] };
+  var state = { data: null, mapping: load(LS_MAP, {}), orderNo: {}, priceOv: {}, groups: [], stamp: null };
 
   // -------------------------------------------------- header form
   function renderHeader(info) {
@@ -80,7 +80,7 @@
       var code = m.code || '';
       var sug = (c.reference.split('-').pop() || '') + '-';
       return '<tr data-k="' + esc(c.key) + '">' +
-        '<td>' + esc(c.orderNo) + '</td><td>' + esc(c.reference) + '</td><td>' + esc(c.color) + '</td>' +
+        '<td><input type="text" data-f="orderNo" title="SCAF: ' + esc(c.orderNo) + '" value="' + esc(state.orderNo[c.key] !== undefined ? state.orderNo[c.key] : c.orderNo) + '"' + ((state.orderNo[c.key] !== undefined ? state.orderNo[c.key] : c.orderNo) ? '' : ' class="miss"') + ' style="min-width:260px"></td><td>' + esc(c.reference) + '</td><td>' + esc(c.color) + '</td>' +
         '<td><input type="text" data-f="code" placeholder="vd: ' + esc(sug) + '977" value="' + esc(code) + '"' + (code ? '' : ' class="miss"') + '></td>' +
         '<td><input type="text" data-f="styleNo" value="' + esc(m.styleNo || '') + '"></td>' +
         '<td><input type="text" data-f="hs" value="' + esc(m.hs || '') + '"></td>' +
@@ -93,6 +93,7 @@
       tr.querySelectorAll('input').forEach(function (inp) {
         var f = inp.getAttribute('data-f'), v = inp.value.trim();
         if (f === 'code') { v = v.replace(/-$/, ''); inp.classList.toggle('miss', !/^.+-.+$/.test(v)); }
+        if (f === 'orderNo') { state.orderNo[k] = v; inp.classList.toggle('miss', !v); return; }
         m[f] = v;
       });
       state.mapping[k] = m;
@@ -111,7 +112,12 @@
     var err = $('#err');
     err.hidden = true;
     try {
-      state.groups = C.buildGroups(state.data.rows, state.mapping, sizeMode(), state.priceOv);
+      var mp = {};
+      Object.keys(state.mapping).forEach(function (k) { mp[k] = Object.assign({}, state.mapping[k], { orderNo: state.orderNo[k] }); });
+      Object.keys(state.orderNo).forEach(function (k) { if (!mp[k]) mp[k] = { orderNo: state.orderNo[k] }; });
+      state.groups = C.buildGroups(state.data.rows, mp, sizeMode(), state.priceOv);
+      var poInp = $('[data-h="po"]');
+      if (poInp && !poInp.value && state.groups[0]) { var mm = state.groups[0].poName.match(/^\s*(\d{5,})/); if (mm) poInp.value = mm[1]; }
     } catch (e) {
       state.groups = [];
       $('#sumTbl tbody').innerHTML = '<tr><td colspan="6" style="color:var(--mute)">' + esc(e.message) + '</td></tr>';
@@ -150,7 +156,8 @@
         try { parsed = C.parseScafSheet(wb.worksheets[i]); } catch (e) { lastErr = e; }
       }
       if (!parsed) throw lastErr || new Error('Không đọc được file.');
-      var po = (parsed.rows[0].orderNo.match(/^\s*(\d+)/) || [])[1] || '';
+      var po = (parsed.rows[0].orderNo.match(/^\s*(\d{5,})/) || [])[1] || '';
+      state.orderNo = {};
       parsed.info.po = po;
       state.data = parsed; state.priceOv = {};
       $('#dropText').innerHTML = '<b>' + esc(file.name) + '</b> — bấm để chọn file khác';
@@ -174,7 +181,7 @@
       var H = readHeader();
       var bad = state.groups.filter(function (g) { return g.summary.some(function (s) { return !s.price; }); });
       if (bad.length && !confirm('Còn dòng chưa có đơn giá (' + bad.map(function (g) { return g.code; }).join(', ') + '). Vẫn xuất file?')) return;
-      var wb = C.buildWorkbook(ExcelJS, { header: H, groups: state.groups });
+      var wb = C.buildWorkbook(ExcelJS, { header: H, groups: state.groups, stamp: currentStamp() });
       var out = await wb.xlsx.writeBuffer();
       var blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       var a = document.createElement('a');
@@ -188,6 +195,41 @@
       var err = $('#err'); err.hidden = false; err.textContent = 'Lỗi khi xuất file: ' + e.message;
     }
   }
+
+  // -------------------------------------------------- buyer stamp (INV-3RD)
+  var LS_STAMP = 'scafdocs.stamp.v1';
+  function currentStamp() {
+    var custom = load(LS_STAMP, null);
+    if (custom === 'none') return null;
+    var url = (custom && custom.url) || window.SCAF_DEFAULT_STAMP;
+    if (!url) return null;
+    var m = url.match(/^data:image\/(png|jpe?g|gif);base64,(.*)$/);
+    if (!m) return null;
+    var w = (custom && custom.w) || 318, h = (custom && custom.h) || 107;
+    return { base64: m[2], extension: m[1] === 'jpg' ? 'jpeg' : m[1], width: w, height: h };
+  }
+  function renderStamp() {
+    var st = currentStamp(), img = $('#stampImg');
+    if (st) { img.src = 'data:image/' + st.extension + ';base64,' + st.base64; img.hidden = false; $('#stampNone').hidden = true; }
+    else { img.hidden = true; $('#stampNone').hidden = false; }
+  }
+  $('#stampFile').addEventListener('change', function (e) {
+    var f = e.target.files[0]; if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function () {
+      var im = new Image();
+      im.onload = function () {
+        var w = 318, h = Math.round(318 * im.height / im.width);
+        try { localStorage.setItem(LS_STAMP, JSON.stringify({ url: rd.result, w: w, h: h })); } catch (err) { alert('Ảnh quá lớn để lưu, hãy dùng ảnh nhỏ hơn.'); }
+        renderStamp();
+      };
+      im.src = rd.result;
+    };
+    rd.readAsDataURL(f); e.target.value = '';
+  });
+  $('#stampDefault').addEventListener('click', function () { try { localStorage.removeItem(LS_STAMP); } catch (e) { } renderStamp(); });
+  $('#stampRemove').addEventListener('click', function () { save(LS_STAMP, 'none'); renderStamp(); });
+  renderStamp();
 
   // -------------------------------------------------- wire up
   var drop = $('#drop');

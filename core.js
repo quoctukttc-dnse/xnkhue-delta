@@ -183,7 +183,7 @@
       if (!code) throw new Error('Chưa nhập Customs code cho ' + r.reference + ' / ' + r.color);
       var g = byCode[code];
       if (!g) {
-        g = byCode[code] = { code: code, styleNo: m.styleNo || '', hs: m.hs || '', price: num(m.price), poName: r.orderNo, lines: [], summary: [], _s: {} };
+        g = byCode[code] = { code: code, styleNo: m.styleNo || '', hs: m.hs || '', price: num(m.price), poName: (m.orderNo || '').trim() || r.orderNo, lines: [], summary: [], _s: {} };
         groups.push(g);
       }
       var size = convertSize(r.sizeRaw, sizeMode);
@@ -458,26 +458,7 @@
       setC(ws, 'G' + (tot + 1), 'USD', { font: T({ bold: true }), alignment: { horizontal: 'right' } });
       boxBorder(ws, tot, 3, tot + 1, 3); boxBorder(ws, tot, 7, tot + 1, 7);
 
-      // HS code summary
-      r = tot + 3;
-      ['H.S CODE', 'QUANTITY', 'FOB VALUE'].forEach(function (t, i) { ws.getCell(r, 2 + i).value = t; ws.getCell(r, 2 + i).font = T({ bold: true, size: 10 }); });
-      var hsList = [];
-      groups.forEach(function (g) { var h = /^\d+$/.test(String(g.hs)) ? Number(g.hs) : g.hs; if (hsList.indexOf(h) < 0) hsList.push(h); });
-      var hsStart = r + 1;
-      hsList.forEach(function (h, i) {
-        var rr = hsStart + i, q1 = 0, v1 = 0;
-        groups.forEach(function (g) { var gh = /^\d+$/.test(String(g.hs)) ? Number(g.hs) : g.hs; if (gh === h) g.summary.forEach(function (s) { q1 += s.qty; v1 += s.qty * s.price; }); });
-        setC(ws, 'B' + rr, h, { font: T({ size: 10 }), alignment: { horizontal: 'left' } });
-        setC(ws, 'C' + rr, F('SUMIF($B$' + first + ':$B$' + lastLine + ',B' + rr + ',$C$' + first + ':$C$' + lastLine + ')', q1), { font: T({ size: 10 }), numFmt: '#,##0' });
-        setC(ws, 'D' + rr, F('SUMIF($B$' + first + ':$B$' + lastLine + ',B' + rr + ',$G$' + first + ':$G$' + lastLine + ')', v1), { font: T({ size: 10 }), numFmt: '#,##0.00' });
-      });
-      var hsTot = hsStart + hsList.length;
-      setC(ws, 'B' + hsTot, 'TOTAL:', { font: T({ bold: true, size: 10 }) });
-      setC(ws, 'C' + hsTot, F('SUM(C' + hsStart + ':C' + (hsTot - 1) + ')', totalQty), { font: T({ bold: true, size: 10, color: { argb: RED } }), numFmt: '#,##0' });
-      setC(ws, 'D' + hsTot, F('SUM(D' + hsStart + ':D' + (hsTot - 1) + ')', totalAmt), { font: T({ bold: true, size: 10, color: { argb: RED } }), numFmt: '#,##0.00' });
-      gridBorder(ws, r, 2, hsTot, 4);
-
-      r = hsTot + 2;
+      r = tot + 4;
       ws.mergeCells('A' + r + ':G' + r);
       setC(ws, 'A' + r, 'ON BEHALF OF SCAVI HUE COMPANY', { font: T({ bold: true, underline: true }), alignment: { horizontal: 'center' } });
       fontAll(ws, T());
@@ -680,6 +661,12 @@
         setC(ws, 'P' + tot, F('SUM(P' + itemFirst + ':P' + itemLast + ')', totalAmt), { font: B, numFmt: '"US$"#,##0.00' });
         for (var c3 = 4; c3 <= lc; c3++) { ws.getCell(tot, c3).border = { top: THIN, bottom: MED }; }
         setC(ws, 'J' + (tot + 3), 'Signed by', { font: B });
+        // Dấu / chữ ký của buyer (bên thứ 3) – giữ như form Docs cũ
+        var st = model.stamp;
+        if (st && (st.base64 || st.buffer)) {
+          var imgId = wb.addImage(st.buffer ? { buffer: st.buffer, extension: st.extension || 'png' } : { base64: st.base64, extension: st.extension || 'png' });
+          ws.addImage(imgId, { tl: { col: 11.15, row: tot + 2.3 }, ext: { width: st.width || 318, height: st.height || 107 }, editAs: 'oneCell' });
+        }
         boxBorder(ws, 34, 1, tot + 9, lc);
       }
     }
