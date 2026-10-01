@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SCAF → Bộ chứng từ xuất khẩu</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1>SCAF → Bộ chứng từ xuất khẩu</h1>
+    <p class="sub">Tải file Data xuất từ SCAF, khai báo Customs code &amp; giá, bấm xuất ra file Excel gồm các sheet <b>INV-3RD</b>, <b>INV - delta</b>, <b>PLIST</b>, <b>CI</b> và sheet theo từng <b>Customs code</b>.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- STEP 1 -->
+  <section class="card">
+    <h2><span class="n">1</span> File Data từ SCAF</h2>
+    <label id="drop" class="drop">
+      <input type="file" id="file" accept=".xlsx">
+      <span id="dropText">Kéo thả hoặc bấm để chọn file <b>.xlsx</b> (báo cáo Packing List xuất từ SCAF)</span>
+    </label>
+    <div id="msg" class="msg" hidden></div>
+  </section>
+
+  <div id="after" hidden>
+  <!-- STEP 2 -->
+  <section class="card">
+    <h2><span class="n">2</span> Khai báo Customs code theo Reference + Màu</h2>
+    <p class="hint">Customs code lấy từ SCAF (vd: <code>4AC089-977</code>). Thông tin đã nhập được nhớ trên máy này cho lần sau.</p>
+    <div class="tbl-wrap">
+      <table id="mapTbl">
+        <thead><tr><th>Order No</th><th>Reference</th><th>Màu</th><th>Customs code *</th><th>ORDER NO (style)</th><th>HS code</th><th>Đơn giá USD</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="row gap">
+      <div class="seg">
+        <span>Size dạng "90(S)" hiển thị:</span>
+        <label><input type="radio" name="sizeMode" value="letter" checked> Chữ (S)</label>
+        <label><input type="radio" name="sizeMode" value="number"> Số (90)</label>
+        <label><input type="radio" name="sizeMode" value="raw"> Giữ nguyên</label>
+      </div>
+      <div class="spacer"></div>
+      <button class="ghost" id="exportMap" type="button">Lưu bảng mã (.json)</button>
+      <label class="ghost btnlike">Nạp bảng mã<input type="file" id="importMap" accept=".json" hidden></label>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="card">
+    <h2><span class="n">3</span> Thông tin chứng từ</h2>
+    <div class="grid" id="hdr"></div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="card">
+    <h2><span class="n">4</span> Tổng hợp theo Customs code + Size</h2>
+    <p class="hint">Có thể sửa đơn giá từng dòng nếu khác giá chung.</p>
+    <div class="tbl-wrap">
+      <table id="sumTbl">
+        <thead><tr><th>Item number</th><th>HS code</th><th class="r">Số kiện</th><th class="r">Số lượng</th><th class="r">Đơn giá</th><th class="r">Thành tiền</th></tr></thead>
+        <tbody></tbody>
+        <tfoot></tfoot>
+      </table>
+    </div>
+    <div id="err" class="msg err" hidden></div>
+    <div class="row end">
+      <input id="fname" class="fname" type="text">
+      <button id="go" class="primary" type="button">Xuất file Excel</button>
+    </div>
+  </section>
+  </div>
+
+  <footer class="foot">Xử lý hoàn toàn trên trình duyệt — dữ liệu không gửi lên máy chủ nào.</footer>
+</main>
+
+<script src="vendor/exceljs.min.js"></script>
+<script src="core.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

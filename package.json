@@ -1,0 +1,10 @@
+{
+  "name": "scaf-docs",
+  "version": "1.0.0",
+  "description": "Web xuất bộ chứng từ (CI, PLIST, INV-3RD, INV - delta, Customs code) từ file Data SCAF",
+  "private": true,
+  "scripts": {
+    "test": "node tests/node-test.js sample/V000003340_data.xlsx /tmp/test-out.xlsx letter"
+  },
+  "devDependencies": { "exceljs": "4.4.0" }
+}
