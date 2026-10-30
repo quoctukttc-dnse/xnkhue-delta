@@ -24,8 +24,8 @@
     ['brand', 'Brand', 'ADIDAS', 'text', true],
     ['season', 'Season', 'S24', 'text', true],
     ['pcsPerSet', 'Số PCS / set', '1', 'number', true],
-    ['buyer1', 'Buyer – dòng 1', '', 'text', true],
-    ['buyer2', 'Buyer – dòng 2', '', 'text', true],
+    ['buyer1', 'Buyer – tên (bên thứ 3)', 'DELTA GALIL BRANDS INTERNATIONAL GMBH', 'text', true],
+    ['buyer2', 'Buyer – địa chỉ', 'Platz 10 CH-6039 Root D4 Switzerland', 'text', true],
     ['buyerTel', 'Buyer TEL (INV - delta)', 'TEL: 41 79 586 7403', 'text', true],
     ['consignee1', 'Consignee – tên', 'Pond Group Co., Ltd.', 'text', true],
     ['consignee2', 'Consignee – địa chỉ 1', '42F, Tower1 Parc1, 108, Yeoui-daero, Yeongdeungpo-gu', 'text', true],
@@ -43,6 +43,10 @@
   // -------------------------------------------------- header form
   function renderHeader(info) {
     var saved = load(LS_HDR, {});
+    // Địa chỉ buyer cũ (GMBH PLATZ 1A...) đã đổi -> bỏ giá trị cũ đã lưu để dùng mặc định mới
+    if (/PLATZ\s*1A/i.test(saved.buyer2 || '') || /PLATZ\s*1A/i.test(saved.buyer1 || '')) {
+      delete saved.buyer1; delete saved.buyer2; save(LS_HDR, saved);
+    }
     var html = FIELDS.map(function (f) {
       var v = f[4] && saved[f[0]] !== undefined ? saved[f[0]] : f[2];
       if (info) {
@@ -50,8 +54,6 @@
         if (f[0] === 'invoiceDate' && info.invoiceDate) v = C.fmtDate(info.invoiceDate);
         if (f[0] === 'sailingDate' && (info.sailingDate || info.invoiceDate)) v = C.fmtDate(info.sailingDate || info.invoiceDate);
         if (f[0] === 'po' && info.po) v = info.po;
-        if (f[0] === 'buyer1' && info.buyer1) v = info.buyer1;
-        if (f[0] === 'buyer2' && info.buyer2) v = info.buyer2;
         if (f[0] === 'portLoading' && info.from && !saved.portLoading) v = /port/i.test(info.from) ? info.from : info.from + ' PORT';
         if (f[0] === 'shipperPer' && info.shipperPer) v = info.shipperPer;
       }

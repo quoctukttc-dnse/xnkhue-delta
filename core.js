@@ -313,11 +313,11 @@
       var redL = { name: 'Times New Roman', size: 10, color: { argb: 'FFC00000' } };
       widths(ws, { A: 5.5, B: 5.5, C: 12, D: 22.4, E: 8, F: 8.5, G: 8.7, H: 11.6, I: 11.3, J: 10, K: 10, L: 21.7 });
       ws.mergeCells('A1:L1'); ws.mergeCells('A2:L2');
-      setC(ws, 'A1', 'SCAVI HUE COMPANY', { font: { name: 'Times New Roman', size: 14, bold: true }, alignment: { horizontal: 'center' } });
+      setC(ws, 'A1', 'SCAVI LIMITED COMPANY', { font: { name: 'Times New Roman', size: 14, bold: true }, alignment: { horizontal: 'center' } });
       setC(ws, 'A2', 'PACKING LIST', { font: { name: 'Times New Roman', size: 14, bold: true }, alignment: { horizontal: 'center' } });
       setC(ws, 'A3', 'DATE:  ', { font: B }); setC(ws, 'C3', F('CI!G4', H.invoiceDate), { font: B, numFmt: 'dd-mmm-yy', alignment: { horizontal: 'left' } });
       setC(ws, 'A4', 'Customers', { font: B }); setC(ws, 'D4', F('CI!A8&""', H.consignee1), { font: B });
-      setC(ws, 'A5', 'Supplier', { font: B }); setC(ws, 'D5', 'SCAVI HUE COMPANY', { font: B });
+      setC(ws, 'A5', 'Supplier', { font: B }); setC(ws, 'D5', 'SCAVI LIMITED COMPANY', { font: B });
       setC(ws, 'H5', 'Invoice #: ', { font: B }); setC(ws, 'I5', F('CI!G3&""', H.invoiceNo), { font: B });
       setC(ws, 'A6', 'Shipper per', { font: B }); setC(ws, 'D6', H.shipperPer, { font: B }); setC(ws, 'H6', 'Flight', { font: B });
       setC(ws, 'A7', 'Salling on', { font: B }); setC(ws, 'C7', F('CI!B19', H.sailingDate), { font: B, numFmt: 'dd-mmm-yy', alignment: { horizontal: 'left' } });
@@ -381,7 +381,7 @@
       setC(ws, 'A3', '1) Shipper/exporter:', { font: T() });
       setC(ws, 'E3', '8) No of Invoice:', { font: T() });
       setC(ws, 'G3', H.invoiceNo, { font: T({ bold: true, color: { argb: RED } }) });
-      setC(ws, 'A4', 'SCAVI HUE COMPANY', { font: T({ bold: true }) });
+      setC(ws, 'A4', 'SCAVI LIMITED COMPANY', { font: T({ bold: true }) });
       setC(ws, 'E4', '    Date:', { font: T() });
       setC(ws, 'G4', H.invoiceDate, { font: T({ color: { argb: RED } }), numFmt: 'dd-mmm-yyyy', alignment: { horizontal: 'left' } });
       setC(ws, 'A5', 'Phong Dien Industrial Zone', { font: T() });
@@ -460,7 +460,7 @@
 
       r = tot + 4;
       ws.mergeCells('A' + r + ':G' + r);
-      setC(ws, 'A' + r, 'ON BEHALF OF SCAVI HUE COMPANY', { font: T({ bold: true, underline: true }), alignment: { horizontal: 'center' } });
+      setC(ws, 'A' + r, 'ON BEHALF OF SCAVI LIMITED COMPANY', { font: T({ bold: true, underline: true }), alignment: { horizontal: 'center' } });
       fontAll(ws, T());
     })();
 
@@ -474,7 +474,7 @@
       setC(ws, 'A3', isDelta ? 'Supplier :' : 'Seller', { font: A({ bold: true }) });
       setC(ws, 'G3', 'Invoice No. and Date :', { font: A({ bold: true }) });
       if (isDelta) {
-        setC(ws, 'B4', F('CI!A4&""', 'SCAVI HUE COMPANY'), { font: A({ bold: true }) });
+        setC(ws, 'B4', F('CI!A4&""', 'SCAVI LIMITED COMPANY'), { font: A({ bold: true }) });
         setC(ws, 'B5', F('CI!A5&""', 'Phong Dien Industrial Zone'), { font: A() });
         setC(ws, 'B6', F('CI!A6&""', 'Phong Dien Ward, Hue City, Viet Nam'), { font: A() });
         setC(ws, 'G6', 'Buyer: ', { font: A({ bold: true }) });
